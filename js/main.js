@@ -22,15 +22,22 @@ const audio = $('#audio');
 const playBtn = $('.btn-toggle-play');
 const player = $('.player');
 const progress = $('#progress');
+const nextBtn = $('.btn-next');
+const prevBtn = $('.btn-prev');
+const randomBtn = $('.btn-random')
+const repeatBtn = $('.btn-repeat');
 const app = {
     currentIndex: 0,
     isPlaying: false,
+    isRandom: false,
+    isRepeat: false,
     songs : [
         {
             name:'Đau nhất là lặng im',
             singer:"Erik",
             path: "./musics/DauNhatLaLangIm-ERIK-7130326.mp3",
             image: "./images/dau-nhat-la-lang-im.jpg",
+            id:1 ,
 
         },
         {
@@ -38,54 +45,62 @@ const app = {
             singer:"Thùy Chi",
             path: "./musics/ChoNgayAnhNhanRaEmMoiTinhDauCuaToiOST-ThuyChi-5845024.mp3",
             image: './images/cho-ngay-anh-nhan-ra-em.jpg',
+            id:2 ,
         },
         {
             name:'Cần gì hơn',
             singer:"Tiên Tiên",
             path: "./musics/CanGiHon-TienTienJustaTee-6236038.mp3",
             image: './images/can-gi-hon.jpg',
+            id:3 ,
         },
         {
             name:'Chạy về nơi phía anh',
             singer:"Khắc Việt",
             path: "./musics/ChayVeNoiPhiaAnh-KhacViet-7129688.mp3",
             image: "./images/chay-ve-noi-phia-anh.jpg",
+            id:4 ,
         },
         {
             name:'See tình',
             singer:"Hoàng Thùy Linh",
             path: "./musics/SeeTinh-HoangThuyLinh-7130526.mp3",
             image: "./images/see-tinh.jpg",
+            id:5 ,
         },
         {
             name:'Bầu trời bình yên',
             singer:"Bình Boo",
             path: "./musics/BauTroiNhoYen-BinhBoo-7127857.mp3",
             image: "./images/bau-troi-binh-yen.jpg",
+            id:6 ,
         },
         {
             name:'Cưới em',
             singer:"Bray",
             path: "./musics/CuoiEm-BRay-7130027.mp3",
             image: "./images/cuoi-em.jpg",
+            id:7 ,
         },
         {
             name:'Ước mơ của mẹ',
             singer:"Quân A.P",
             path: "./musics/UocMoCuaMe1-QuanAP-7127567.mp3",
             image: "./images/uoc-mo-cua-me.jpg",
+            id:8 ,
         },
         {
             name:'Ngày đầu tiên',
             singer:"Đức Phúc",
             path: "./musics/NgayDauTien-DucPhuc-7129810.mp3",
             image: "./images/ngay-dau-tien.jpg",
+            id:9 ,
         },
     ],
     render: function() {
         const htmls = this.songs.map(song => {
             return `
-            <div class="song">
+            <div class="song" id='${song.id}'>
             <div class="thumb" style="background-image: url('${song.image}')">
             </div>
             <div class="body">
@@ -156,10 +171,78 @@ const app = {
             const timePercent = audio.duration/100;
             audio.currentTime =e.target.value * timePercent
         }
+
+        //next/ prev bai hat 
+        nextBtn.onclick = function() {
+            if(app.isRandom) {
+                app.randomSong()
+            } else {
+                app.nextSong()
+            }  
+            audio.play()
+
+        }
+        prevBtn.onclick = function () {
+            if(app.isRandom) {
+                app.randomSong()
+            } else {
+                app.prevSong();
+            }
+            audio.play()
+        }
+        //random bai hat 
+        randomBtn.onclick = function() {
+            if(!app.isRandom) {
+                randomBtn.classList.add("active")
+                app.isRandom = true;
+                
+            } else {
+                randomBtn.classList.remove("active")
+                app.isRandom = false;
+            }
+        }
+        // khi ket thuc bai hat 
+        audio.onended = function () {
+            nextBtn.click()
+        }
+        // repeat bai hat
+        repeatBtn.onclick = function () {
+            if(!app.isRepeat) {
+                repeatBtn.classList.add("active")
+                app.isRepeat = true;
+                
+            } else {
+                repeatBtn.classList.remove("active")
+                app.isRepeat = false;
+            }
+        }
+    },
+    nextSong: function() {
+        this.currentIndex++;
+        if ( this.currentIndex >= this.songs.length) {
+            this.currentIndex= 0;
+        }
+        this.loadCurrentSong();
+    },
+    prevSong: function() {
+        this.currentIndex--;
+        if ( this.currentIndex < 0) {
+            this.currentIndex= this.songs.length -1;
+        }
+        console.log(this.currentIndex)
+        this.loadCurrentSong();
+    },
+    randomSong: function() {
+        let newIndex;
+        do {
+            newIndex = Math.floor(Math.random()*this.songs.length)
+        } while (this.currentIndex === newIndex )
+        this.currentIndex = newIndex;
+        this.loadCurrentSong()
     },
     loadCurrentSong: function () {
         heading.textContent = this.currentSong.name;
-        cdThumb.style.backgroundImage = `url(${this.currentSong.image})`
+        cdThumb.style.backgroundImage = `url(${this.currentSong.image})`;
         audio.src = this.currentSong.path;
         // audio.play()
     },
@@ -176,14 +259,3 @@ const app = {
     },
 }
 app.start()
-
-const route = function () {
-    
-}
-// route()
-
-
-
-
-
-// transform: rotate(100deg);
