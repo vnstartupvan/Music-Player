@@ -26,6 +26,7 @@ const nextBtn = $('.btn-next');
 const prevBtn = $('.btn-prev');
 const randomBtn = $('.btn-random')
 const repeatBtn = $('.btn-repeat');
+const playList = $('.playlist');
 const app = {
     currentIndex: 0,
     isPlaying: false,
@@ -98,9 +99,9 @@ const app = {
         },
     ],
     render: function() {
-        const htmls = this.songs.map(song => {
+        const htmls = this.songs.map((song, index) => {
             return `
-            <div class="song" id='${song.id}'>
+            <div class="song ${index === app.currentIndex ? 'active' : ''}" id='${song.id}'>
             <div class="thumb" style="background-image: url('${song.image}')">
             </div>
             <div class="body">
@@ -113,7 +114,7 @@ const app = {
             </div>
             `
         })
-        $('.playlist').innerHTML = htmls.join('')
+        playList.innerHTML = htmls.join('')
     },
     defineProperties: function(){
         Object.defineProperty(this,'currentSong', {
@@ -180,6 +181,7 @@ const app = {
                 app.nextSong()
             }  
             audio.play()
+            app.render()
 
         }
         prevBtn.onclick = function () {
@@ -189,6 +191,7 @@ const app = {
                 app.prevSong();
             }
             audio.play()
+            app.render()
         }
         //random bai hat 
         randomBtn.onclick = function() {
@@ -216,6 +219,25 @@ const app = {
                 app.isRepeat = false;
             }
         }
+        // play a clicked song
+        playList.addEventListener('click', function(e) {
+            const clickedSong = e.target.closest('.song');
+            var clickedSongIndex;
+            for (var i= 0; i<app.songs.length; i++) {
+                if(clickedSong.id == app.songs[i].id){
+                    clickedSongIndex = i;
+                    break;
+                }
+            }
+            app.currentIndex = clickedSongIndex;
+            app.render()
+            app.loadCurrentSong()
+            if(app.isPlaying === true) {
+                app.isPlaying = false;
+            }
+            playBtn.click()
+
+        })
     },
     nextSong: function() {
         this.currentIndex++;
