@@ -177,7 +177,9 @@ const app = {
         nextBtn.onclick = function() {
             if(app.isRandom) {
                 app.randomSong()
-            } else {
+            } else if(app.isRepeat){
+                app.loopSong()
+            }else {
                 app.nextSong()
             }  
             audio.play()
@@ -213,7 +215,6 @@ const app = {
             if(!app.isRepeat) {
                 repeatBtn.classList.add("active")
                 app.isRepeat = true;
-                
             } else {
                 repeatBtn.classList.remove("active")
                 app.isRepeat = false;
@@ -251,7 +252,6 @@ const app = {
         if ( this.currentIndex < 0) {
             this.currentIndex= this.songs.length -1;
         }
-        console.log(this.currentIndex)
         this.loadCurrentSong();
     },
     randomSong: function() {
@@ -261,6 +261,10 @@ const app = {
         } while (this.currentIndex === newIndex )
         this.currentIndex = newIndex;
         this.loadCurrentSong()
+    },
+    loopSong: audio.onended = function () {
+        app.currentIndex;  
+        app.loadCurrentSong()  
     },
     loadCurrentSong: function () {
         heading.textContent = this.currentSong.name;
@@ -281,3 +285,4 @@ const app = {
     },
 }
 app.start()
+
